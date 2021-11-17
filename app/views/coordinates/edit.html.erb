@@ -1,0 +1,6 @@
+<%= form_for( @coordinate , remote: true) do |f| %>
+  <%= f.text_field (:username) %>
+  <%= f.text_field (:first_name) %>
+  <%= f.text_field (:last_name) %>
+  <%= f.submit "Submit", disable_with: 'Submiting...' %>
+<% end %>
