@@ -1,0 +1,19 @@
+<div>
+tect
+<% if @coordinate.errors.any? %>
+  <div>
+    <ul>
+      <% @coordinate.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+</div>
+
+<%= form_for( @coordinate, method: 'post', remote: true) do |f| %>
+  <%= f.text_field (:username) %>
+  <%= f.text_field (:first_name) %>
+  <%= f.text_field (:last_name) %>
+  <%= f.submit "Submit", disable_with: 'Submiting...' %>
+<% end %>

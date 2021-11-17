@@ -1,0 +1,12 @@
+
+<% if @user.coordinate == nil %>
+  <%= link_to "modifier mes infos", new_coordinate_path %>
+<% else %>
+<%= @user.id %>
+<%= @user.coordinate.username %>
+<%= @user.email %>
+<%= @user.coordinate.first_name %>
+<%= @user.coordinate.last_name %>
+
+<%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
+<% end %>
