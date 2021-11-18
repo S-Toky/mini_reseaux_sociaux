@@ -12,7 +12,7 @@ tect
 </div>
 
 <%= form_for( @coordinate, method: 'post', remote: true) do |f| %>
-  <%= f.text_field (:username) %>
+  <%= f.text_field (:username), value: current_user.username %>
   <%= f.text_field (:first_name) %>
   <%= f.text_field (:last_name) %>
   <%= f.submit "Submit", disable_with: 'Submiting...' %>
