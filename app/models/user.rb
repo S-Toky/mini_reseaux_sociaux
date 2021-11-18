@@ -4,5 +4,13 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  has_many :followers, class_name: "Relationship", foreign_key: "followed_id"
+  has_many :followings, class_name: "Relationship", foreign_key: "follower_id"
+  
   has_one :coordinate
+
+  def username
+    return self.email.split('@')[0].capitalize
+  end
+  
 end

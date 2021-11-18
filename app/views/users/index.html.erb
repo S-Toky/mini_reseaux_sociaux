@@ -1,2 +1,11 @@
-<h1>Users#index</h1>
-<p>Find me in app/views/users/index.html.erb</p>
+<div class="container">
+  <% @users.each do |user| %>
+    <li><%= user.email %> || 
+    <% if user.coordinate == nil %>
+      <%= user.username %> || 
+    <% else %>
+      <%= user.coordinate.username %> || 
+    <% end %>
+    Abonnement: <%= user.followers.count %> / Abonner: <%= user.followings.count %> </li>
+  <% end %>
+</div>
