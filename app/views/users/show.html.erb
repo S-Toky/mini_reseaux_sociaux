@@ -34,24 +34,63 @@
     </ul>
   </p>
 
-<div>
-<h2> mes infos </h2>
-  <% if @user.coordinate == nil %>
-    <%= link_to "modifier mes infos", new_coordinate_path %>
-  <% else %>
-  <ul>
-    <li> <%= @user.id %> </li>
+  <div>
+  <h2> mes infos </h2>
     <% if @user.coordinate == nil %>
-      <%= @user.username %>
+      <%= link_to "modifier mes infos", new_coordinate_path %>
     <% else %>
-      <li> <%= @user.coordinate.username %> </li>
+    <ul>
+      <li> <%= @user.id %> </li>
+      <% if @user.coordinate == nil %>
+        <%= @user.username %>
+      <% else %>
+        <li> <%= @user.coordinate.username %> </li>
+      <% end %>
+      <li> <%= @user.email %> </li>
+      <li> <%= @user.coordinate.first_name %> </li>
+      <li> <%= @user.coordinate.last_name %> </li>
+    </ul>
+      <% if @user == current_user %>
+        <%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
+      <% end %> 
     <% end %>
-    <li> <%= @user.email %> </li>
-    <li> <%= @user.coordinate.first_name %> </li>
-    <li> <%= @user.coordinate.last_name %> </li>
-  </ul>
+  <div>
+</div>
 
-  <%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
+<div class="container">
+  <p>
+    <strong>Nom :</strong>
+    <%= @user.username %>
+  </p>
+  <% if signed_in? && !Invitation.reacted?(current_user.id, @user.id) && current_user != @user %>
+    <p> <%= link_to 'Send Invitation', invitations_path(ids: {id1: current_user.id, id2: @user.id}), method: :post, class:"btn btn-success" %></p>
   <% end %>
-<div>
+
+  <p>Amis de <strong> <%= @user.username %> </strong> </p>
+
+  <ol>
+    <% @user.friends.each do |friend| %>
+      <li>
+        <%= friend.username %>
+        <% if @user == current_user %>
+          <%= link_to 'Retirer de la liste d\'amis', invitation_path(invitation_id: Invitation.find_invitation(@user.id, friend.id)), class:'btn btn-danger'  %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+
+  <% if @user.id == current_user.id %>
+
+    <p> les demande d'amis pour <strong> <%= @user.username %> </strong> </p>
+
+    <ol>
+      <% @user.pending_invitations.each do |invitation| %>
+        <li>
+          <%= User.find(invitation.user_id).username %>
+          <%= link_to "Accepter l'invitation", invitation_path(invitation_id: invitation.id), method: :patch, class:"btn btn-success" %>
+          <%= link_to "Rejeter l'invitation", invitation_path(invitation_id: invitation.id), method: :delete, class:"btn btn-warning" %>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
 </div>

@@ -7,5 +7,6 @@ Rails.application.routes.draw do
     resources :relationships, only: [:create]
   end
   resources :relationships, only: [:destroy]
+  resources :invitations
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
