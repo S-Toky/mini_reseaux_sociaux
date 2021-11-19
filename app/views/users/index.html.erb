@@ -1,11 +1,34 @@
-<div class="container">
-  <% @users.each do |user| %>
-    <li><%= user.email %> || 
-    <% if user.coordinate == nil %>
-      <%= user.username %> || 
-    <% else %>
-      <%= user.coordinate.username %> || 
+<div class="container">  
+  <table class="table table-success table-striped table-hover table-bordered border-primary">
+    <thead>
+      <tr class="table-dark">
+        <th scope="col">username</th>
+        <th scope="col">email</th>
+        <th scope="col">Abonnée</th>
+        <th scope="col">Abonements</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @users.each do |user| %>
+      <tr>
+      <% if user.coordinate == nil %>
+        <th scope="row"><%= user.username %></th>
+      <% else %>
+        <th scope="row"><%= user.coordinate.username %></th>
+      <% end %>
+        <td><%= user.email %></td>
+        <td><%= user.followings.count %></td>
+        <td><%= user.followers.count %></td>
+        <td><%= link_to "Voir details", user_path(user.id), class:"btn btn-primary" %></td>
+      <% if signed_in? && !Invitation.reacted?(current_user.id, user.id) && current_user != user %>
+        <td> <%= link_to 'Send Invitation', invitations_path(ids: {id1: current_user.id, id2: user.id}), method: :post, class:"btn btn-success" %></td>
+      <% else %>
+        <td> </td>
+      <% end %>
+      </tr>
     <% end %>
-    Abonnement: <%= user.followers.count %> / Abonner: <%= user.followings.count %> </li>
-  <% end %>
+    </tbody>
+  </table>
 </div>
