@@ -1,9 +1,46 @@
 <div class="container">
-  <p> <%= @user.email %> </p>
-  <% if current_user.id != @user.id %>
-    <%= link_to "S'abonner", user_relationships_path(@user), method: :post, class:"btn btn-success" unless @rel.present? %>
-    <%= link_to "Se désabonner", relationship_path(@rel), method: :delete, class:"btn btn-danger" if @rel.present? %>
-  <% end %>
+  <div class="row">
+    <div class="col-3 bg-info">
+    <h2> mes infos </h2>
+      <% if @user.coordinate == nil %>
+        <%= link_to "modifier mes infos", new_coordinate_path %>
+      <% else %>
+      <ul>
+        <li> <%= @user.id %> </li>
+        <% if @user.coordinate == nil %>
+          <%= @user.username %>
+        <% else %>
+          <li> <%= @user.coordinate.username %> </li>
+        <% end %>
+        <li> <%= @user.email %> </li>
+        <li> <%= @user.coordinate.first_name %> </li>
+        <li> <%= @user.coordinate.last_name %> </li>
+      </ul>
+        <% if @user == current_user %>
+          <%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
+        <% end %> 
+      <% end %>
+    </div>
+    <div class="col-9">
+      <p> <%= @user.email %> </p>
+      <div class="d-flex justify-content-around">
+        <% if current_user.id != @user.id %>
+          <p> <%= link_to "S'abonner", user_relationships_path(@user), method: :post, class:"btn btn-success" unless @rel.present? %> </p>
+          <p> <%= link_to "Se désabonner", relationship_path(@rel), method: :delete, class:"btn btn-danger" if @rel.present? %> </p>
+        <% end %>
+
+        <% if signed_in? && !Invitation.reacted?(current_user.id, @user.id) && current_user != @user %>
+          <p> <%= link_to 'Send Invitation', invitations_path(ids: {id1: current_user.id, id2: @user.id}), method: :post, class:"btn btn-success" %></p>
+        <% end %>
+
+        <p class="btn btn-primary"> voir mes invitations <p>
+        <p class="btn btn-primary"> liste d'amis <p>
+      </div>
+
+      
+
+    </div>
+  </div>
 
   <p> Abonnement: <%= @user.followers.count %> :
     <ul>
@@ -34,27 +71,7 @@
     </ul>
   </p>
 
-  <div>
-  <h2> mes infos </h2>
-    <% if @user.coordinate == nil %>
-      <%= link_to "modifier mes infos", new_coordinate_path %>
-    <% else %>
-    <ul>
-      <li> <%= @user.id %> </li>
-      <% if @user.coordinate == nil %>
-        <%= @user.username %>
-      <% else %>
-        <li> <%= @user.coordinate.username %> </li>
-      <% end %>
-      <li> <%= @user.email %> </li>
-      <li> <%= @user.coordinate.first_name %> </li>
-      <li> <%= @user.coordinate.last_name %> </li>
-    </ul>
-      <% if @user == current_user %>
-        <%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
-      <% end %> 
-    <% end %>
-  <div>
+  
 </div>
 
 <div class="container">
@@ -62,9 +79,6 @@
     <strong>Nom :</strong>
     <%= @user.username %>
   </p>
-  <% if signed_in? && !Invitation.reacted?(current_user.id, @user.id) && current_user != @user %>
-    <p> <%= link_to 'Send Invitation', invitations_path(ids: {id1: current_user.id, id2: @user.id}), method: :post, class:"btn btn-success" %></p>
-  <% end %>
 
   <p>Amis de <strong> <%= @user.username %> </strong> </p>
 
