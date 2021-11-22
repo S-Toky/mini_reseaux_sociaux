@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   root 'homes#index'
   devise_for :users
   resources :users, only: [:index, :show]
@@ -8,5 +9,6 @@ Rails.application.routes.draw do
   end
   resources :relationships, only: [:destroy]
   resources :invitations
+  resources :posts
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

@@ -1,0 +1,18 @@
+<div>
+  <% if @post.errors.any? %>
+    <div>
+      <ul>
+        <% @post.errors.full_messages.each do |message| %>
+        <li> <%= message %> </li>
+        <% end %>
+      </ul>
+    </div>
+   <% end %> 
+</div>
+
+<%= form_for( @post , remote: true) do |f| %>
+  <%= f.text_field :title, placeholder: "titre" %>
+  <%= f.text_field :subject, placeholder: "sujet" %>
+  <%= f.text_area :content, placeholder: "contenue" %>
+  <%= f.submit "valider", disable_with: "validering..." %>
+<% end %>

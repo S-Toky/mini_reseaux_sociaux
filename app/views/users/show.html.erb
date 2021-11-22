@@ -2,16 +2,12 @@
   <div class="row">
     <div class="col-3 bg-info">
     <h2> mes infos </h2>
+      <p> <%= @user.username %> </p>
       <% if @user.coordinate == nil %>
         <%= link_to "modifier mes infos", new_coordinate_path %>
       <% else %>
       <ul>
         <li> <%= @user.id %> </li>
-        <% if @user.coordinate == nil %>
-          <%= @user.username %>
-        <% else %>
-          <li> <%= @user.coordinate.username %> </li>
-        <% end %>
         <li> <%= @user.email %> </li>
         <li> <%= @user.coordinate.first_name %> </li>
         <li> <%= @user.coordinate.last_name %> </li>
@@ -37,6 +33,11 @@
         <p class="btn btn-primary"> liste d'amis <p>
       </div>
 
+      <div>
+        <% current_user.posts.each do |post| %>
+          <%= post.title %>
+        <% end %>
+      </div>
       
 
     </div>
@@ -47,11 +48,7 @@
     <% if @followers.present? %>
       <% @followers.each do |follower| %>
         <% follow = Relationship.find(follower) %>
-        <% if follow.follower.coordinate == nil %>
         <li><%= follow.follower.username %></li>
-        <% else %>
-        <li><%= follow.follower.coordinate.username %></li>
-        <% end %>
       <% end %>
     <% end %>
     </ul>
@@ -61,11 +58,7 @@
       <% if @followings.present? %>
         <% @followings.each do |followed| %>
           <% follow = Relationship.find(followed) %>
-          <% if follow.followed.coordinate == nil %>
           <li><%= follow.followed.username %></li>
-          <% else %>
-          <li><%= follow.followed.coordinate.username %></li>
-          <% end %>
         <% end %>
       <% end %>
     </ul>
