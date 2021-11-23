@@ -3,11 +3,14 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+  
+  has_one :coordinate
+
+  has_many :posts
 
   has_many :followers, class_name: "Relationship", foreign_key: "followed_id"
   has_many :followings, class_name: "Relationship", foreign_key: "follower_id"
   
-  has_one :coordinate
 
   has_many :Invitations
   has_many :pending_invitations, -> { where confirmed: false }, class_name: 'Invitation', foreign_key: 'friend_id'
@@ -28,7 +31,19 @@ class User < ApplicationRecord
   end
 
   def username
-    return self.email.split('@')[0].capitalize
+    if self.coordinate == nil
+      return name_user
+    else
+      return self.coordinate.username
+    end
+    
   end
+
+  private
+
+  def name_user
+    self.email.split('@')[0].capitalize
+  end
+  
   
 end
