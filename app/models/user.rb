@@ -6,6 +6,9 @@ class User < ApplicationRecord
   
   has_one :coordinate
 
+  has_one_attached :avatar
+  has_many_attached :albums
+
   has_many :posts
 
   has_many :followers, class_name: "Relationship", foreign_key: "followed_id"

@@ -4,3 +4,21 @@
   <p> <%= @post.user.username %> </p>
   <p> <%= @post.content %> </p>
 </div>
+
+<div>
+  <h3>ajouter photos</h3>
+    <%= form_tag post_pictures_path(@post), multipart: true do %>
+    <%= file_field_tag :pictures %>
+    <%= submit_tag "charger" %>
+    <% end %>
+</div>
+
+<div>
+<% for i in 0..(@post.pictures.length-1) %>
+  <% if @post.pictures.attached? %>
+    <%= image_tag @post.pictures[i], class:"img-thumbnail" %>
+  <%else%>
+    <img src="..." class="img-thumbnail" alt="...">
+  <%end%>
+<% end %>
+</div>
