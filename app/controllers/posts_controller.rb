@@ -13,7 +13,7 @@ class PostsController < ApplicationController
     @post.user_id = current_user.id
     if @post.valid?
       @post.save
-      redirect_to posts_path
+      redirect_back fallback_location: @post
     else
       redirect_to new_post_path
     end
