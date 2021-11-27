@@ -65,6 +65,23 @@
             </span>
           <% end %>
         </button>
+
+        <% if current_user == @user %>
+          <a type="button" class="btn btn-primary position-relative" href="<%= conversation_path(Conversation.first) %>">
+          Message
+            <% @conversations.each do |conversation| %>
+              <% if !conversation.unread_message_count(current_user).zero? && conversation.unread_message_count(current_user).present? %>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  new
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+              <% end %>
+            <% end %>
+          </a>
+          <% else %>
+          <%= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: @user.id), method: :post, class:"btn btn-primary" %>
+        <% end %>
+
         <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#amis" aria-controls="amis"> liste d'amis </button>
       </div>
       <hr>
@@ -169,7 +186,8 @@
         <li>
           <%= friend.username %>
           <% if @user == current_user %>
-            <%= link_to 'Retirer de la liste d\'amis', invitation_path(invitation_id: Invitation.find_invitation(@user.id, friend.id)), class:'btn btn-danger'  %>
+            <%= link_to 'Retirer de la liste d\'amis', invitation_path(invitation_id: Invitation.find_invitation(@user.id, friend.id)), method: :delete, class:'btn btn-danger'  %>
+            <%= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: friend.id), method: :post, class:"btn btn-primary" %>
           <% end %>
         </li>
       <% end %>
