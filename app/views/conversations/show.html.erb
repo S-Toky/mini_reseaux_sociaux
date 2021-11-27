@@ -1,0 +1,40 @@
+
+<div class="row">
+  <div class="col-4 bg-info">
+    <ul>
+      <% @conversations.each do |conversation| %>
+        <% @users.each do |user| %>
+          <% if conversation.receiver == user %>
+            <% recipient = conversation.sender_id == current_user.id ? conversation.receiver : conversation.sender %>
+            <li><%= link_to conversation.recipient(current_user).username, conversation_path(conversation) %>
+              <% if !conversation.unread_message_count(current_user).zero? %>
+                (<%= conversation.unread_message_count(current_user) %>)
+              <% end %>
+            </li>
+          <% end %>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="col-8 bg-warning">
+    <ul>
+      <% @messages.each do |message| %>
+        <% if message.body %>
+          <li>
+            <h4><%= message.user.username %></h4>
+            <p><%= message.body %></p>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
+
+    <%= form_for [@conversation, @message] do |f| %>
+      <div class="field">
+        <%= f.text_area :body, placeholder: "Your message" %>
+      </div>
+
+      <%= f.submit "Send" %>
+    <% end %>
+  </div>
+</div>
