@@ -10,6 +10,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @rel = @user.followers.find_by(follower: current_user)
     @conversations = Conversation.where("sender_id = ? OR receiver_id = ?", current_user.id, current_user.id)
+    @comment = Comment.new
 
 
     if !@user.followers.empty?
