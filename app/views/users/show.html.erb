@@ -78,28 +78,30 @@
               <% end %>
             <% end %>
           </a>
-          <% else %>
-          <%= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: @user.id), method: :post, class:"btn btn-primary" %>
+        <% else %>
+          <%#= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: @user.id), method: :post, class:"btn btn-primary" %>
         <% end %>
 
         <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#amis" aria-controls="amis"> liste d'amis </button>
       </div>
       <hr>
+
+      <%# post %>
       <div>
       <% if @user == current_user %>
 
-      <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#postnew" aria-expanded="false" aria-controls="postnew"> Nouvelle publication </button>
-    <div class="collapse" id="postnew">
-      <div class="card card-body">
-        <%= form_for(Post.new , remote: true) do |f| %>
-          <%= f.text_field :title, placeholder: "titre" %>
-          <%= f.text_field :subject, placeholder: "sujet" %>
-          <%= f.text_area :content, placeholder: "contenue" %>
-          <%= f.submit "valider", disable_with: "validering..." %>
-        <% end %>
-      </div>
-    </div>
-      <br><br>
+        <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#postnew" aria-expanded="false" aria-controls="postnew"> Nouvelle publication </button>
+        <div class="collapse" id="postnew">
+          <div class="card card-body">
+            <%= form_for(Post.new , remote: true) do |f| %>
+              <%= f.text_field :title, placeholder: "titre" %>
+              <%= f.text_field :subject, placeholder: "sujet" %>
+              <%= f.text_area :content, placeholder: "contenue" %>
+              <%= f.submit "valider", disable_with: "validering..." %>
+            <% end %>
+          </div>
+        </div>
+          <br><br>
 
         <% current_user.posts.order(created_at: :DESC).each do |post| %>
           <div class="card mb-3">
@@ -112,6 +114,23 @@
               <h5 class="card-title"><%= post.title %></h5>
               <p class="card-text"><%= post.content %></p>
               <p class="card-text"><small class="text-muted"><%= post.created_at.localtime.to_formatted_s(:long) %></small></p>
+            </div>
+            <hr>
+            <div>
+              <%= form_with model: [post, @comment], local: true do |f| %>
+                <%= f.text_field :body %>
+                <%= f.submit "comment"%>
+              <% end %>
+            </div>
+            <div>
+              <% post.comments.each do |comment| %>
+                <%= comment.user.username %> <= 
+                <%= comment.body %> =>
+                <% if current_user == comment.user %>
+                  <%= link_to "delete", post_comment_path(post.id, comment.id), method: :delete %> =>
+                <% end %>
+                [<%= comment.created_at.localtime.strftime("%d-%b-%y . %T") %>]<br>
+              <% end %>
             </div>
           </div>
         <% end %>
