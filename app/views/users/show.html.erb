@@ -124,7 +124,12 @@
             </div>
             <div>
               <% post.comments.each do |comment| %>
-                <%= comment.body %><br>
+                <%= comment.user.username %> <= 
+                <%= comment.body %> =>
+                <% if current_user == comment.user %>
+                  <%= link_to "delete", post_comment_path(post.id, comment.id), method: :delete %> =>
+                <% end %>
+                [<%= comment.created_at.localtime.strftime("%d-%b-%y . %T") %>]<br>
               <% end %>
             </div>
           </div>

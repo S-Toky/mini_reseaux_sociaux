@@ -9,6 +9,12 @@ class CommentsController < ApplicationController
     redirect_back fallback_location: @comment
   end
 
+  def destroy
+    @comment = Comment.find(params[:id])
+    @comment.destroy
+    redirect_back fallback_location: @post
+  end
+
   private
     
  def comment_params
