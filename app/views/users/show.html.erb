@@ -1,0 +1,225 @@
+<div class="container">
+  <div class="row">
+    <div class="col-3">
+      <div class="img-content">
+        <%
+=begin%>
+  <%= form_tag user_avatars_path(@user), multipart: true do %>
+          <%= file_field_tag :avatar, placeholder:"ajouter" %>
+          <%= submit_tag "charger" %>
+        <% end %> 
+  <%
+=end%>
+        <%if @user.avatar.attached?%>
+          <%= image_tag @user.avatar, alt: 'avatar', class:"img-thumbnail image-profil" %>
+        <%else%>
+          <%= image_tag "user.png", alt: 'avatar', class:"img-thumbnail image-profil" %>
+        <%end%>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary mt-5" data-bs-toggle="offcanvas" data-bs-target="#abonnement" aria-controls="abonnement">
+          Abonnement <span class="badge bg-warning"><%= @user.followers.count %></span>
+        </button>
+
+        <button type="button" class="btn btn-primary mt-5" data-bs-toggle="offcanvas" data-bs-target="#abonnee" aria-controls="abonnee">
+          Abonné <span class="badge bg-warning"><%= @user.followings.count %></span>
+        </button>
+      </div>
+      <hr>
+      <div>
+        <% if @user.coordinate == nil %>
+          <%= link_to "modifier mes infos", new_coordinate_path %>
+        <% else %>
+          <% if @user == current_user %>
+            <%= link_to "modifiermes infos", edit_coordinate_path(@user.coordinate.id) %>
+          <% end %> 
+        <p> Pseudo : <%= @user.username %> </p>
+          <p> <%#= @user.id %> </p>
+          <p> Email : <%= @user.email %> </p>
+          <p> Nom : <%= @user.coordinate.last_name %> </p>
+          <p> Prénoms : <%= @user.coordinate.first_name %> </p>
+          <p> Date de naissance : <%= @user.coordinate.birthdate %> </p>
+          <p> Portable : <%= @user.coordinate.cellphone %> </p>
+          <p> Fixe : <%= @user.coordinate.phone %> </p>
+        <% end %>
+      </div>
+      <hr>
+    </div>
+    <div class="col-1">
+    </div>
+    <div class="col-8">
+      <div class="d-flex justify-content-around">
+        <% if current_user.id != @user.id %>
+          <p> <%= link_to "S'abonner", user_relationships_path(@user), method: :post, class:"btn btn-success" unless @rel.present? %> </p>
+          <p> <%= link_to "Se désabonner", relationship_path(@rel), method: :delete, class:"btn btn-danger" if @rel.present? %> </p>
+        <% end %>
+        <% if signed_in? && !Invitation.reacted?(current_user.id, @user.id) && current_user != @user %>
+          <p> <%= link_to 'Send Invitation', invitations_path(ids: {id1: current_user.id, id2: @user.id}), method: :post, class:"btn btn-success" %></p>
+        <% end %>
+        <button type="button" class="btn btn-primary position-relative" data-bs-toggle="offcanvas" data-bs-target="#invitation" aria-controls="invitation">
+          Invitation
+          <% if @user.pending_invitations.present? %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              <%= @user.pending_invitations.count %>
+              <span class="visually-hidden">unread messages</span>
+            </span>
+          <% end %>
+        </button>
+
+        <% if current_user == @user %>
+          <a type="button" class="btn btn-primary position-relative" href="<%= conversation_path(Conversation.first) %>">
+          Message
+            <% @conversations.each do |conversation| %>
+              <% if !conversation.unread_message_count(current_user).zero? && conversation.unread_message_count(current_user).present? %>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  new
+                  <span class="visually-hidden">unread messages</span>
+                </span>
+              <% end %>
+            <% end %>
+          </a>
+        <% else %>
+          <%#= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: @user.id), method: :post, class:"btn btn-primary" %>
+        <% end %>
+
+        <button class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#amis" aria-controls="amis"> liste d'amis </button>
+      </div>
+      <hr>
+
+      <%# post %>
+      <div>
+      <% if @user == current_user %>
+
+        <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#postnew" aria-expanded="false" aria-controls="postnew"> Nouvelle publication </button>
+        <div class="collapse" id="postnew">
+          <div class="card card-body">
+            <%= form_for(Post.new , remote: true) do |f| %>
+              <%= f.text_field :title, placeholder: "titre" %>
+              <%= f.text_field :subject, placeholder: "sujet" %>
+              <%= f.text_area :content, placeholder: "contenue" %>
+              <%= f.submit "valider", disable_with: "validering..." %>
+            <% end %>
+          </div>
+        </div>
+          <br><br>
+
+
+        <% current_user.posts.order(created_at: :DESC).each do |post| %>
+          <div class="card mb-3">
+            <%
+=begin%>
+ <img src="..." class="card-img-top" alt="..."> 
+<%
+=end%>
+            <div class="card-body">
+              <h5 class="card-title"><%= post.title %></h5>
+              <%= link_to "delete", post_path(post.id), method: :delete, class:'btn btn-danger float-end' %>
+              <p class="card-text"><%= post.content %></p>
+              <p class="card-text"><small class="text-muted"><%= post.created_at.localtime.to_formatted_s(:long) %></small></p>
+              <p><%= post.likes.count %> <%= (post.likes.count) == 1 ? 'Like' : 'Likes'%></p>
+              <% pre_like = post.likes.find { |like| like.user_id == current_user.id} %>
+                <% if pre_like %>
+                  <%= button_to 'Unlike', post_like_path(post, pre_like), method: :delete, class:'btn btn-danger' %>
+                <% else %>
+                  <%= button_to 'Like', post_likes_path(post), method: :post, class:"btn btn-success" %>
+                <% end %>
+            </div>
+            <hr>
+            <div>
+              <%= form_with model: [post, @comment], local: true do |f| %>
+                <%= f.text_field :body %>
+                <%= f.submit "comment"%>
+              <% end %>
+            </div>
+            <div>
+              <% post.comments.each do |comment| %>
+                <%= comment.user.username %> <= 
+                <%= comment.body %> =>
+                <% if current_user == comment.user %>
+                  <%= link_to "delete", post_comment_path(post.id, comment.id), method: :delete %> =>
+                <% end %>
+                [<%= comment.created_at.localtime.strftime("%d-%b-%y . %T") %>]<br>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- offcanvas content -->
+<% if @user == current_user %>
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="abonnement" aria-labelledby="abonnementLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="abonnementLabel">Mes liste d'abonnement</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul>
+    <% if @followers.present? %>
+      <% @followers.each do |follower| %>
+        <% follow = Relationship.find(follower) %>
+        <li><%= follow.follower.username %></li>
+      <% end %>
+    <% end %>
+    </ul>
+  </div>
+</div>
+
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="abonnee" aria-labelledby="abonneeLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-tiliste d'tle" id="abonneeLabel">Mes abonnée</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul>
+      <% if @followings.present? %>
+        <% @followings.each do |followed| %>
+          <% follow = Relationship.find(followed) %>
+          <li><%= follow.followed.username %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="invitation" aria-labelledby="invitationLabel" data-bs-scroll="true">
+  <div class="offcanvas-header">
+    <h5 id="invitationLabel">Mes demande d'amis</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ol>
+      <% @user.pending_invitations.each do |invitation| %>
+        <li>
+          <%= User.find(invitation.user_id).username %>
+          <%= link_to "Accepter", invitation_path(invitation_id: invitation.id), method: :patch, class:"btn btn-success" %>
+          <%= link_to "Rejeter", invitation_path(invitation_id: invitation.id), method: :delete, class:"btn btn-warning" %>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="amis" aria-labelledby="amisLabel" data-bs-scroll="true">
+  <div class="offcanvas-header">
+    <h5 id="amisLabel">Mes amis</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ol>
+      <% @user.friends.each do |friend| %>
+        <li>
+          <%= friend.username %>
+          <% if @user == current_user %>
+            <%= link_to 'Retirer de la liste d\'amis', invitation_path(invitation_id: Invitation.find_invitation(@user.id, friend.id)), method: :delete, class:'btn btn-danger'  %>
+            <%= link_to "message", conversations_path(sender_id: current_user.id, receiver_id: friend.id), method: :post, class:"btn btn-primary" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+  </div>
+</div>
+<% end %>
