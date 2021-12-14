@@ -103,6 +103,7 @@
         </div>
           <br><br>
 
+
         <% current_user.posts.order(created_at: :DESC).each do |post| %>
           <div class="card mb-3">
             <%
@@ -112,8 +113,16 @@
 =end%>
             <div class="card-body">
               <h5 class="card-title"><%= post.title %></h5>
+              <%= link_to "delete", post_path(post.id), method: :delete, class:'btn btn-danger float-end' %>
               <p class="card-text"><%= post.content %></p>
               <p class="card-text"><small class="text-muted"><%= post.created_at.localtime.to_formatted_s(:long) %></small></p>
+              <p><%= post.likes.count %> <%= (post.likes.count) == 1 ? 'Like' : 'Likes'%></p>
+              <% pre_like = post.likes.find { |like| like.user_id == current_user.id} %>
+                <% if pre_like %>
+                  <%= button_to 'Unlike', post_like_path(post, pre_like), method: :delete, class:'btn btn-danger' %>
+                <% else %>
+                  <%= button_to 'Like', post_likes_path(post), method: :post, class:"btn btn-success" %>
+                <% end %>
             </div>
             <hr>
             <div>
