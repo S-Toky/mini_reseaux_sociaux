@@ -17,11 +17,11 @@
         <%end%>
       </div>
       <div>
-        <button type="button" class="btn btn-primary mt-5" data-bs-toggle="offcanvas" data-bs-target="#abonnement" aria-controls="abonnement">
+        <button type="button" class="btn btn-primary mt-5 p-2" data-bs-toggle="offcanvas" data-bs-target="#abonnement" aria-controls="abonnement">
           Abonnement <span class="badge bg-warning"><%= @user.followers.count %></span>
         </button>
 
-        <button type="button" class="btn btn-primary mt-5" data-bs-toggle="offcanvas" data-bs-target="#abonnee" aria-controls="abonnee">
+        <button type="button" class="btn btn-primary mt-5 p-2" data-bs-toggle="offcanvas" data-bs-target="#abonnee" aria-controls="abonnee">
           Abonné <span class="badge bg-warning"><%= @user.followings.count %></span>
         </button>
       </div>
@@ -66,7 +66,7 @@
           <% end %>
         </button>
 
-        <% if current_user == @user %>
+        <% if current_user == @user && Conversation.first !=nil %>
           <a type="button" class="btn btn-primary position-relative" href="<%= conversation_path(Conversation.first) %>">
           Message
             <% @conversations.each do |conversation| %>
